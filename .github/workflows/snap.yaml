@@ -1,0 +1,26 @@
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - '**.md'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - '**.md'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  snap:
+    uses: canonical/robotics-actions-workflows/.github/workflows/snap.yaml@main
+    with:
+      snap-test-script: |
+        atuin help
+      snap-risk: candidate
+    secrets:
+      snapstore-login: ${{ secrets.SNAPSTORE_LOGIN }}
