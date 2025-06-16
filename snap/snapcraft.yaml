@@ -7,6 +7,8 @@ description: |
   Additionally, it provides optional and fully encrypted synchronisation of your history between machines,
   via an Atuin server.
 
+  [!IMPORTANT] Due to Snap confinement, the 'scripts' functionality is **not** available.
+
   To import existing history,
   make sure to connect the appropriate interface such as:
 
@@ -24,6 +26,13 @@ description: |
   When using this snap, atuin's configuration and data file live respectively at
   - $HOME/snap/atuin/.config/atuin
   - $HOME/snap/atuin/local/share/atuin
+
+  For bash users, the Snap bundles both `ble.sh` & `bash-preexec`.
+  They can be found in `/snap/atuin/current/usr/share/`.
+
+  The Snap has only really been tested for bash.
+  Please do report any issue on the GitHub repo linked for 'issues'.
+  Conversely, reports that the snap is working fine with other shells is appreciated.
 
 issues: https://github.com/artivis/atuin-snap/issues
 contact: https://github.com/artivis/atuin-snap/issues
