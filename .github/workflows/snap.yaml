@@ -1,3 +1,5 @@
+name: Snap
+
 on:
   push:
     paths-ignore:
