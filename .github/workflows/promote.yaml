@@ -9,6 +9,6 @@ jobs:
     secrets:
       snapstore-login: ${{ secrets.SNAPSTORE_LOGIN }}
     with:
-      snap: netbird
+      snap: atuin
       from-channel: 'latest/candidate'
       to-channel: 'latest/stable'
