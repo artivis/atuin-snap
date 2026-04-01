@@ -76,7 +76,7 @@ parts:
   atuin:
     plugin: rust
     source: https://github.com/atuinsh/atuin.git
-    source-tag: v18.13.4
+    source-tag: v18.13.6
     override-pull: |
       craftctl default
 
