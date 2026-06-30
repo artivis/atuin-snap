@@ -52,6 +52,10 @@ apps:
     completer: usr/share/bash-completion/completions/atuin-completion.bash
     plugs:
       - dot-bash-history
+      - dot-claude
+      - dot-codex
+      - dot-opencode
+      - dot-pi
       - dot-fish-history
       - dot-resh-history
       - dot-zsh-history
@@ -71,6 +75,22 @@ plugs:
   dot-zsh-history:
     interface: personal-files
     read: [$HOME/.zsh_history]
+  dot-claude:
+    interface: personal-files
+    read: [$HOME/.claude/settings.json]
+    write: [$HOME/.claude/settings.json]
+  dot-codex:
+    interface: personal-files
+    read: [$HOME/.codex/hooks.json]
+    write: [$HOME/.codex/hooks.json]
+  dot-opencode:
+    interface: personal-files
+    read: [$HOME/.config/opencode/plugins/atuin.ts]
+    write: [$HOME/.config/opencode/plugins/atuin.ts]
+  dot-pi:
+    interface: personal-files
+    read: [$HOME/.pi/agent/extensions/atuin.ts]
+    write: [$HOME/.pi/agent/extensions/atuin.ts]
 
 parts:
   atuin:
