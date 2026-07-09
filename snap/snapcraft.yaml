@@ -33,18 +33,15 @@ description: |
   The Snap has only really been tested for bash.
   Please do report any issue on the GitHub repo linked for 'issues'.
   Conversely, reports that the snap is working fine with other shells is appreciated.
-
 issues: https://github.com/artivis/atuin-snap/issues
 contact: https://github.com/artivis/atuin-snap/issues
 source-code: https://github.com/artivis/atuin-snap
 donation: https://github.com/sponsors/atuinsh
 website: https://atuin.sh/
 license: MIT
-
 confinement: strict
 grade: stable
 base: core24
-
 apps:
   atuin:
     command: atuin
@@ -57,7 +54,6 @@ apps:
       - dot-zsh-history
       - network
       - network-bind
-
 plugs:
   dot-bash-history:
     interface: personal-files
@@ -71,12 +67,11 @@ plugs:
   dot-zsh-history:
     interface: personal-files
     read: [$HOME/.zsh_history]
-
 parts:
   atuin:
     plugin: rust
     source: https://github.com/atuinsh/atuin.git
-    source-tag: v18.16.1
+    source-tag: v18.17.0
     override-pull: |
       craftctl default
 
@@ -86,14 +81,12 @@ parts:
       version="$(git describe --always --tags --exclude='weekly' | sed -e 's/^v//;s/-/+git/;y/-/./')"
       craftctl set version="$version"
       craftctl set grade="stable"
-
   atuin-launcher:
     after: [atuin]
     plugin: dump
     source: snap/local/
     organize:
       'launcher': usr/local/atuin/
-
   atuin-completer:
     after: [atuin]
     plugin: nil
@@ -101,14 +94,12 @@ parts:
       'atuin-completion.bash': usr/share/bash-completion/completions/
     override-build: |
       $CRAFT_STAGE/atuin gen-completions --shell bash > $CRAFT_PART_INSTALL/atuin-completion.bash
-
   ble:
     plugin: make
     build-packages: [gawk]
     source: https://github.com/akinomyoga/ble.sh.git
     make-parameters:
       - PREFIX=/usr
-
   bash-preexec:
     plugin: nil
     build-packages: [curl]
