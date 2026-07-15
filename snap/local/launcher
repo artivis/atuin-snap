@@ -31,4 +31,24 @@ if [ "$#" -eq 3 ] && [ "$2" == "scripts" ]; then
   exit 1
 fi
 
+if [ "$#" -eq 4 ] && [ "$2" == "hook" ] && [ "$3" == "install" ]; then
+  agent="$4"
+  case "${agent}" in
+    claude-code|claude) plug="dot-claude" ;;
+    codex)              plug="dot-codex" ;;
+    opencode)           plug="dot-opencode" ;;
+    pi)                 plug="dot-pi" ;;
+    *)                  plug="" ;;
+  esac
+  if [ -n "${plug}" ] && ! snapctl is-connected "${plug}"; then
+    echo "The '${plug}' interface is not connected."
+    echo ""
+    echo "To connect the interface:"
+    echo ""
+    echo "  sudo snap connect ${SNAP_NAME}:${plug}"
+    echo ""
+    exit 1
+  fi
+fi
+
 exec "$@"
