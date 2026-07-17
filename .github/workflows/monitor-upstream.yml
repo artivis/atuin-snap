@@ -8,6 +8,7 @@ on:
 jobs:
   monitor-upstream-release:
     permissions:
+      contents: read
       issues: write
     uses: canonical/robotics-actions-workflows/.github/workflows/upstream-gh-tag-monitor.yaml@main
     with:

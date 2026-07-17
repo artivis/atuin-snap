@@ -8,5 +8,6 @@ on:
 jobs:
   monitor-promotion-candidate-to-stable:
     permissions:
+      contents: read
       issues: write
     uses: canonical/robotics-actions-workflows/.github/workflows/channel-risk-sync-monitor.yaml@main
