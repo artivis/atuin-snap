@@ -87,12 +87,11 @@ plugs:
     interface: personal-files
     read: [$HOME/.pi/agent/extensions/atuin.ts]
     write: [$HOME/.pi/agent/extensions/atuin.ts]
-
 parts:
   atuin:
     plugin: rust
     source: https://github.com/atuinsh/atuin.git
-    source-tag: v18.17.1
+    source-tag: v18.18.1
     override-pull: |
       craftctl default
 
