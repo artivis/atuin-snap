@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
-if [ "$#" -eq 3 ] && [ "$2" == "import" ]; then
+if [ "$#" -eq 3 ] && [ "$2" = "import" ]; then
   if ! snapctl is-connected dot-bash-history && \
      ! snapctl is-connected dot-fish-history && \
      ! snapctl is-connected dot-resh-history && \
@@ -21,26 +21,32 @@ if [ "$#" -eq 3 ] && [ "$2" == "import" ]; then
   # which relies on $HOME. This env var is remapped in Snaps.
   # We thus workaround that by setting HISTFILE which takes precedence
   # in atuin loading logic.
-  if snapctl is-connected dot-bash-history && [[ -z "${HISTFILE}" ]]; then
+  if snapctl is-connected dot-bash-history && [ -z "${HISTFILE}" ]; then
     export HISTFILE="${SNAP_REAL_HOME}/.bash_history"
   fi
 fi
 
-if [ "$#" -eq 3 ] && [ "$2" == "scripts" ]; then
+if [ "$#" -eq 3 ] && [ "$2" = "scripts" ]; then
   echo "Do to snap confinement, the 'scripts' command is not available."
   exit 1
 fi
 
-if [ "$#" -eq 4 ] && [ "$2" == "hook" ] && [ "$3" == "install" ]; then
+if [ "$#" -eq 4 ] && [ "$2" = "hook" ] && [ "$3" = "install" ]; then
   agent="$4"
+  # Atuin resolves the agents' config dirs from $HOME, which is remapped
+  # inside the snap. Point them at the real home instead.
   case "${agent}" in
-    claude-code|claude) plug="dot-claude" ;;
-    codex)              plug="dot-codex" ;;
-    opencode)           plug="dot-opencode" ;;
-    pi)                 plug="dot-pi" ;;
-    *)                  plug="" ;;
+    claude-code|claude) plug="dot-claude";   var="CLAUDE_CONFIG_DIR";   dir="${SNAP_REAL_HOME}/.claude" ;;
+    codex)              plug="dot-codex";    var="CODEX_HOME";          dir="${SNAP_REAL_HOME}/.codex" ;;
+    opencode)           plug="dot-opencode"; var="XDG_CONFIG_HOME";     dir="${SNAP_REAL_HOME}/.config" ;;
+    pi)                 plug="dot-pi";       var="PI_CODING_AGENT_DIR"; dir="${SNAP_REAL_HOME}/.pi/agent" ;;
+    *)
+      echo "Error: Unknown agent '${agent}'."
+      echo "Known agents: claude-code (claude), codex, opencode, pi."
+      exit 1 ;;
   esac
-  if [ -n "${plug}" ] && ! snapctl is-connected "${plug}"; then
+
+  if ! snapctl is-connected "${plug}"; then
     echo "The '${plug}' interface is not connected."
     echo ""
     echo "To connect the interface:"
@@ -49,6 +55,24 @@ if [ "$#" -eq 4 ] && [ "$2" == "hook" ] && [ "$3" == "install" ]; then
     echo ""
     exit 1
   fi
+
+  current="$(printenv "${var}")"
+  if [ -z "${current}" ]; then
+    export "${var}=${dir}"
+  else
+    echo "Warning: ${var}=${current} is set, but custom paths are not supported:" >&2
+    echo "the '${plug}' interface only grants access to ${dir}. Trying anyway." >&2
+    echo "" >&2
+  fi
+
+  # ATUIN_HOME takes precedence over XDG_CONFIG_HOME for atuin's own files, so
+  # use a scratch dir to keep atuin from touching the real home.
+  ATUIN_HOME="$(mktemp -d)"
+  export ATUIN_HOME
+  trap 'rm -rf "${ATUIN_HOME}"' EXIT
+
+  "$@"
+  exit $?
 fi
 
 exec "$@"
