@@ -31,6 +31,33 @@ if [ "$#" -eq 3 ] && [ "$2" = "scripts" ]; then
   exit 1
 fi
 
+if [ "$#" -eq 4 ] && [ "$2" = "mcp" ] && [ "$3" = "install" ]; then
+  srv="/snap/bin/${SNAP_NAME} mcp"
+  case "$4" in
+    claude-code|claude) alt="claude mcp add --scope user atuin" ;;
+    codex)              alt="codex mcp add atuin" ;;
+    # LP #1849753: opencode gives the server a socket for stdio,
+    # which the snap can't read: relay it through pipes.
+    opencode)           alt="opencode mcp add --global atuin"
+                        srv="sh -c \"sed -u '' | ${srv} | sed -u ''\"" ;;
+    pi)                 alt="pi mcp add atuin" ;;
+    *)
+      echo "Error: Unknown agent '${4}'."
+      echo "Known agents: claude-code (claude), codex, opencode, pi."
+      exit 1 ;;
+  esac
+
+  if [ -n "${alt}" ]; then
+    echo "Warning: 'atuin mcp install $4' is not supported inside the snap:"
+    echo "it needs the agent's own CLI or config, which a strictly confined snap can't reach."
+    echo "Run this instead:"
+    echo ""
+    echo "  ${alt} -- ${srv}"
+    echo ""
+    exit 0
+  fi
+fi
+
 if [ "$#" -eq 4 ] && [ "$2" = "hook" ] && [ "$3" = "install" ]; then
   agent="$4"
   # Atuin resolves the agents' config dirs from $HOME, which is remapped
