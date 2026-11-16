@@ -98,6 +98,20 @@ if [ "$#" -eq 4 ] && [ "$2" = "hook" ] && [ "$3" = "install" ]; then
   export ATUIN_HOME
   trap 'rm -rf "${ATUIN_HOME}"' EXIT
 
+  # Atuin picks the opencode v1 or v2 plugin from `opencode --version`, which
+  # isn't reachable from the snap: report the major version ourselves.
+  # Furthermore, it install the v1 plugin by default.
+  # We override this by providing a fake
+  # `opencode --version` command that reports the desired major version & defaults to 2.
+  if [ "${agent}" = "opencode" ]; then
+    major="${ATUIN_OPENCODE_MAJOR:-2}"
+    echo "Installing the plugin for opencode ${major}.x (set ATUIN_OPENCODE_MAJOR to change)."
+    mkdir "${ATUIN_HOME}/bin"
+    printf '#!/bin/sh\necho "opencode v%s"\n' "${major}" > "${ATUIN_HOME}/bin/opencode"
+    chmod +x "${ATUIN_HOME}/bin/opencode"
+    export PATH="${ATUIN_HOME}/bin:${PATH}"
+  fi
+
   "$@"
   exit $?
 fi
